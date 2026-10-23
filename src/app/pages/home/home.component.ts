@@ -13,26 +13,26 @@ export class HomeComponent implements OnInit {
   public pieChart!: Chart<"pie", number[], string>;
   public totalCountries: number = 0
   public totalJOs: number = 0
-  public error!:string // robustesse ou logique de code -> si on a jamais d'erreur on aura une promise non tenue ici
-  titlePage: string = "Medals per Country"; // propreté du code -> titre de la page en dur  | d'ailleurs, pourquoi cette syntaxe ? pourquoi pas de mot clé public?
+  public error!:string
+  titlePage: string = "Medals per Country";
 
   constructor(private router: Router, private http:HttpClient) { }
 
   ngOnInit() {
-    this.http.get<any[]>(this.olympicUrl).pipe().subscribe( // séparation des responsabilités -> récup des données json et traitement des données dans un service dédié | subscribe et pipe déjà traité
-      (data) => { // traitement à déléguer à un service
-        console.log(`Liste des données : ${JSON.stringify(data)}`); // code à supprimer
-        if (data && data.length > 0) { // idem manque de vérifications pb traité déjà 
-          this.totalJOs = Array.from(new Set(data.map((i: any) => i.participations.map((f: any) => f.year)).flat())).length; // pourquoi utiliser Set alors qu'on peut juste remplir le nouveau tableau non?
+    this.http.get<any[]>(this.olympicUrl).pipe().subscribe(
+      (data) => {
+        console.log(`Liste des données : ${JSON.stringify(data)}`);
+        if (data && data.length > 0) {
+          this.totalJOs = Array.from(new Set(data.map((i: any) => i.participations.map((f: any) => f.year)).flat())).length;
           const countries: string[] = data.map((i: any) => i.country);
           this.totalCountries = countries.length;
-          const medals = data.map((i: any) => i.participations.map((i: any) => (i.medalsCount))); // première partie de la méthode dupliquée, peut-être factorisé
-          const sumOfAllMedalsYears = medals.map((i) => i.reduce((acc: any, i: any) => acc + i, 0)); //i non typé 
-          this.buildPieChart(countries, sumOfAllMedalsYears); // idem que pour countries
+          const medals = data.map((i: any) => i.participations.map((i: any) => (i.medalsCount)));
+          const sumOfAllMedalsYears = medals.map((i) => i.reduce((acc: any, i: any) => acc + i, 0));
+          this.buildPieChart(countries, sumOfAllMedalsYears);
         }
       },
-      (error:HttpErrorResponse) => { // idem que pour countries
-        console.log(`erreur : ${error}`); //code à supprimer
+      (error:HttpErrorResponse) => {
+        console.log(`erreur : ${error}`);
         this.error = error.message
       }
     )
@@ -64,7 +64,7 @@ export class HomeComponent implements OnInit {
         }
       }
     });
-    this.pieChart = pieChart; // idem 
+    this.pieChart = pieChart; 
   }
 }
 
