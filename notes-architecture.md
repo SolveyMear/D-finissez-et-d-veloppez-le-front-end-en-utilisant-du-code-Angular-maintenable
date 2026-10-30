@@ -215,6 +215,38 @@ src/
 └── styles.scss
 ```
 
+### Schéma de l'arborescence
+
+```mermaid
+flowchart TD
+    src["src/"] --> app["app/"]
+    src --> assets["assets/"]
+    assets --> mock["mock/"]
+    mock --> json["olympic.json<br/>Données olympiques"]
+
+    app --> components["components/<br/>Composants réutilisables"]
+    components --> header["header/<br/>En-tête partagé"]
+    components --> stat["stat/<br/>Libellé et valeur"]
+    components --> pie["pie-chart/<br/>Médailles par pays"]
+    components --> line["line-chart/<br/>Médailles par édition"]
+
+    app --> pages["pages/<br/>Composants de route"]
+    pages --> home["home/<br/>Tableau de bord"]
+    pages --> country["country/<br/>Détail d'un pays"]
+    pages --> notFound["not-found/<br/>Route introuvable"]
+
+    app --> models["models/<br/>Interfaces TypeScript"]
+    models --> olympicModel["olympic.model.ts"]
+    models --> participationModel["participation.model.ts"]
+    models --> statsModel["olympic-statistics.model.ts"]
+
+    app --> services["services/"]
+    services --> service["olympic.service.ts<br/>Chargement et calculs"]
+
+    app --> routing["app-routing.module.ts<br/>Définition des routes"]
+    app --> module["app.module.ts<br/>Configuration Angular"]
+```
+
 ## Rôle de chaque dossier
 
 - **components/** *Separation of concerns (SRP)* : le composant affiche, le service gère les données. Composants « de page » et composants « de présentation » : une page récupère les données et décide (naviguer, afficher une erreur), tandis que pie-chart, line-chart et stat reçoivent des données et affichent, sans connaître le service ni le routeur.  
