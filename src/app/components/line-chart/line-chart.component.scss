@@ -1,0 +1,15 @@
+:host {
+  display: block;
+  width: 50%;
+  margin: 0 auto;
+}
+
+canvas {
+  width: 100%;
+}
+
+@media screen and (max-width: 1000px) {
+  :host {
+    width: 100%;
+  }
+}

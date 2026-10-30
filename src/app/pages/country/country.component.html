@@ -1,30 +1,23 @@
-<div>
-  <div>
-    <div class="center">
-      <div>{{ titlePage }}</div>
-    </div>
-    <div class="split">
-      <div>
-        <p>Number of entries</p>
-        <p>{{ totalEntries }}</p>
-      </div>
-      <div>
-        <p>Total Number of medals</p>
-        <p>{{ totalMedals }}</p>
-      </div>
-      <div>
-        <p>Total Number of athletes</p>
-        <p>{{ totalAthletes }}</p>
-      </div>
-    </div>
-  </div>
-  <div class="chart-container wrapper-container">
-    <div class="container">
-      <canvas id="countryChart">{{ lineChart }}</canvas>
-      <h2>Date</h2>
-    </div>
-  </div>
+<main>
+  <p *ngIf="error" role="alert">{{ error }}</p>
+
+  <ng-container *ngIf="statistics as data">
+    <h2 class="center"><span>{{ data.country }}</span></h2>
+
+    <section class="split" aria-label="Country statistics">
+      <app-stat label="Number of entries" [value]="data.totalEntries"></app-stat>
+      <app-stat label="Total number of medals" [value]="data.totalMedals"></app-stat>
+      <app-stat label="Total number of athletes" [value]="data.totalAthletes"></app-stat>
+    </section>
+
+    <app-line-chart
+      [years]="data.years"
+      [medals]="data.medalsByYear"
+      [country]="data.country">
+    </app-line-chart>
+  </ng-container>
+
   <div class="center">
     <a routerLink="">Go back</a>
   </div>
-</div>
+</main>
