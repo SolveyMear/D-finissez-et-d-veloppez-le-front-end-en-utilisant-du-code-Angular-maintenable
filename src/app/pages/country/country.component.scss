@@ -1,4 +1,29 @@
 
+.country-navigation {
+    margin: 24px auto;
+
+    a {
+        display: block;
+        padding: 8px 14px;
+        border: 1px solid #0b868f;
+        border-radius: 10px;
+        color: #0b868f;
+        text-decoration: none;
+        transition: background-color 150ms ease, color 150ms ease;
+
+        &:hover,
+        &:focus-visible {
+            background-color: #0b868f;
+            color: white;
+        }
+
+        &:focus-visible {
+            outline: 2px solid #0b868f;
+            outline-offset: 3px;
+        }
+    }
+}
+
 .wrapper-container {
     display: flex;
     justify-content: center;

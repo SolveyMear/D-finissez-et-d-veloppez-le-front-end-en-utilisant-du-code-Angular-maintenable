@@ -15,7 +15,8 @@
       (countrySelected)="navigateToCountry($event)">
     </app-pie-chart>
 
-    <nav aria-label="View country statistics">
+    <nav class="country-navigation" aria-label="View country statistics">
+      <h3>View statistics by country</h3>
       <ul>
         <li *ngFor="let country of data.countries">
           <a [routerLink]="['/country', country]">{{ country }}</a>

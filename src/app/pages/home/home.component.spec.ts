@@ -38,5 +38,6 @@ describe('HomeComponent', () => {
     expect(component).toBeTruthy();
     expect(fixture.nativeElement.textContent).toContain('Number of countries');
     expect(fixture.nativeElement.textContent).toContain('Number of Olympic Games');
+    expect(fixture.nativeElement.querySelector('.country-navigation a')?.textContent).toContain('Italy');
   });
 });
