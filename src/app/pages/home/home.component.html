@@ -1,20 +1,26 @@
-<h2>Olympic games app</h2>
-<hr/>
-<div>
-  <div>
-    <div class="center">
-      <div>{{ titlePage }}</div>
-    </div>
-    <div class="split">
-      <div>
-        <p>Number of countries</p>
-        <p>{{ totalCountries }}</p>
-      </div>
-      <div>
-        <p>Number of JOs</p>
-        <p>{{ totalJOs }}</p>
-      </div>
-    </div>
-  </div>
-  <canvas id="DashboardPieChart">{{ pieChart }}</canvas>
-</div>
+<main>
+  <h2 class="center"><span>{{ titlePage }}</span></h2>
+
+  <p *ngIf="error" role="alert">{{ error }}</p>
+
+  <ng-container *ngIf="statistics as data">
+    <section class="split" aria-label="Olympic statistics">
+      <app-stat label="Number of countries" [value]="data.totalCountries"></app-stat>
+      <app-stat label="Number of Olympic Games" [value]="data.totalOlympicGames"></app-stat>
+    </section>
+
+    <app-pie-chart
+      [countries]="data.countries"
+      [medals]="data.medalsByCountry"
+      (countrySelected)="navigateToCountry($event)">
+    </app-pie-chart>
+
+    <nav aria-label="View country statistics">
+      <ul>
+        <li *ngFor="let country of data.countries">
+          <a [routerLink]="['/country', country]">{{ country }}</a>
+        </li>
+      </ul>
+    </nav>
+  </ng-container>
+</main>

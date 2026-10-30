@@ -1,8 +1,10 @@
-import {HttpClient, HttpErrorResponse} from '@angular/common/http';
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, ParamMap, Router} from '@angular/router';
-import Chart from 'chart.js/auto';
-
+import { HttpErrorResponse } from '@angular/common/http';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { EMPTY, catchError, switchMap } from 'rxjs';
+import { CountryStatistics } from '../../models/olympic-statistics.model';
+import { OlympicService, OlympicServiceError } from '../../services/olympic.service';
 
 @Component({
   selector: 'app-country',
@@ -10,58 +12,52 @@ import Chart from 'chart.js/auto';
   styleUrls: ['./country.component.scss']
 })
 export class CountryComponent implements OnInit {
-  private olympicUrl = './assets/mock/olympic.json'
-  public lineChart!: Chart<"line", string[], number>;
-  public titlePage: string = '';
-  public totalEntries: any = 0;
-  public totalMedals: number = 0;
-  public totalAthletes: number = 0;
-  public error!: string;
+  public statistics: CountryStatistics | null = null;
+  public error: string | null = null;
 
-  constructor(private route: ActivatedRoute, private router: Router, private http: HttpClient) {
-  }
+  private readonly destroyRef = inject(DestroyRef);
 
-  ngOnInit() {
-    let countryName: string | null = null
-    this.route.paramMap.subscribe((param: ParamMap) => countryName = param.get('countryName')); 
-    this.http.get<any[]>(this.olympicUrl).pipe().subscribe( 
-      (data) => {
-        if (data && data.length > 0) {
-          const selectedCountry = data.find((i: any) => i.country === countryName); 
-          this.titlePage = selectedCountry.country; 
-          const participations = selectedCountry?.participations.map((i: any) => i); 
-          this.totalEntries = participations?.length ?? 0;
-          const years = selectedCountry?.participations.map((i: any) => i.year) ?? []; 
-          const medals = selectedCountry?.participations.map((i: any) => i.medalsCount.toString()) ?? [];
-          this.totalMedals = medals.reduce((accumulator: any, item: any) => accumulator + parseInt(item), 0);
-          const nbAthletes = selectedCountry?.participations.map((i: any) => i.athleteCount.toString()) ?? []
-          this.totalAthletes = nbAthletes.reduce((accumulator: any, item: any) => accumulator + parseInt(item), 0);
-          this.buildChart(years, medals);
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly olympicService: OlympicService
+  ) { }
+
+  ngOnInit(): void {
+    this.route.paramMap.pipe(
+      switchMap((params) => {
+        const countryName = params.get('countryName');
+        this.statistics = null;
+        this.error = null;
+
+        if (!countryName) {
+          this.router.navigate(['/not-found']);
+          return EMPTY;
         }
-      },
-      (error: HttpErrorResponse) => {
-        this.error = error.message
-      }
-    );
-  }
 
-  buildChart(years: number[], medals: string[]) {
-    const lineChart = new Chart("countryChart", {
-      type: 'line',
-      data: {
-        labels: years,
-        datasets: [
-          {
-            label: "medals",
-            data: medals,
-            backgroundColor: '#0b868f'
-          },
-        ]
-      },
-      options: {
-        aspectRatio: 2.5
+        return this.olympicService.getCountryStatistics(countryName).pipe(
+          catchError((error: unknown) => {
+            if (error instanceof OlympicServiceError && error.kind === 'country-not-found') {
+              this.router.navigate(['/not-found']);
+            } else {
+              this.error = this.getErrorMessage(error);
+            }
+            return EMPTY;
+          })
+        );
+      }),
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe({
+      next: (statistics) => {
+        this.statistics = statistics;
       }
     });
-    this.lineChart = lineChart;
+  }
+
+  private getErrorMessage(error: unknown): string {
+    if (error instanceof OlympicServiceError || error instanceof HttpErrorResponse) {
+      return error.message;
+    }
+    return 'Unable to load Olympic data. Please try again later.';
   }
 }
