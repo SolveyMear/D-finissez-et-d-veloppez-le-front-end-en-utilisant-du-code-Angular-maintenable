@@ -17,7 +17,7 @@
 ## 2. Typage
 ### `home.component.ts`
 
-- Typage faible `any` : 8 fois.
+- Typage faible `any` : 8 fois (ll. 22, 26, 26, 27, 29, 29, 30, 30).
 
 Problèmes avec `any` :
 - pas d'autocomplétion de l'IDE
@@ -33,7 +33,7 @@ Problèmes avec `any` :
 >Dans le JSON, `medalsCount` est un nombre et Chart.js attend des valeurs numériques. Les conversions `toString()` puis `parseInt()` sont donc inutiles et le typage du graphique doit être cohérent avec ces nombres.
 
 - Typage incohérent de totalEntries : passer de `any` à `number`.
-- Typage faible `any` : 11 fois.
+- Typage faible `any` : 11 fois (ll. 16, 27, 30, 32, 34, 35, 36, 36, 37, 38, 38).
 
 
 ## 3. Gestion asynchrone (Observables et cycle de vie)
